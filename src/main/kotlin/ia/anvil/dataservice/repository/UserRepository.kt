@@ -9,7 +9,11 @@ interface UserRepository: MongoRepository<User, UUID> {
 
     fun findUserById(id: UUID): Optional<User>
 
+    fun findByEmail(username: String): Optional<User>
+
     fun findUserByEmailAndPassword(email: String, password: String): Optional<User>
 
     fun findUserByPhone(phone: String): Optional<User>
+
+    fun save(user: User): Optional<User>
 }

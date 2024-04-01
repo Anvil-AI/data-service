@@ -15,11 +15,23 @@ data class User(
 
     val theme: List<Theme>,
     val preferences: UserPreferences
-)
+) {
+    constructor (dto: UserAuthenticationDto): this(
+        UUID.randomUUID(), dto.email, dto.password, dto.phone,
+        emptyList(),
+        UserPreferences(true, true, "PT-BR")
+    )
+}
 
 data class UserPreferences(
     val darkTheme: Boolean,
 
     val notifications: Boolean,
     val language: String,
+)
+
+data class UserAuthenticationDto(
+    var email: String,
+    var password: String,
+    val phone: String,
 )

@@ -1,8 +1,8 @@
 package ia.anvil.dataservice.service
 
 import ia.anvil.dataservice.data.User
+import ia.anvil.dataservice.data.UserAuthenticationDto
 import ia.anvil.dataservice.repository.UserRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -22,5 +22,12 @@ class UserService(val userRepository: UserRepository) {
     fun findUserByPhone(phone: String): Result<User> = runCatching {
         userRepository.findUserByPhone(phone)
             .orElseThrow { Exception("User not found") }
+    }
+
+    fun saveUser(userAuthenticationDto: UserAuthenticationDto): Result<UUID> = runCatching {
+        val orElseThrow = userRepository.save(User(userAuthenticationDto))
+            .orElseThrow { Exception("Could not save user") }
+
+        return Result.success(orElseThrow.id)
     }
 }
