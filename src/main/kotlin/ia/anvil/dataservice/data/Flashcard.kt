@@ -11,8 +11,8 @@ data class Flashcard(
     private var question: String,
     private var answer: String,
     private var theme: String,
-    private var Difficulty: Difficulty = ia.anvil.dataservice.data.Difficulty.BEGIN,
-    private var timeSkip: LocalDate = LocalDate.now(),
+    private var difficulty: Difficulty = ia.anvil.dataservice.data.Difficulty.BEGIN,
+    private var timeReview: LocalDate = LocalDate.now(),
     private var numberReview: Int = 0,
     private var themeId: String,
 ){
