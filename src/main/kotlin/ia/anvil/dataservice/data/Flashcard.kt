@@ -11,7 +11,7 @@ data class Flashcard(
     private var question: String,
     private var answer: String,
     private var theme: String,
-    private var difficulty: Difficulty = ia.anvil.dataservice.data.Difficulty.BEGIN,
+    private var difficulty: Difficulty = Difficulty.BEGIN,
     private var timeReview: LocalDate = LocalDate.now(),
     private var numberReview: Int = 0,
     private var themeId: String,
@@ -20,4 +20,7 @@ data class Flashcard(
         require(question.isNotEmpty()) {"Question cannot be empty."}
         require(answer.isNotEmpty()) {"Answer cannot be empty."}
     }
+
+    fun getQuestion() = question
+    fun getAnswer() = answer
 }
