@@ -1,19 +1,22 @@
 package ia.anvil.dataservice.controller
 
 import ia.anvil.dataservice.configuration.AuthConfiguration
+import ia.anvil.dataservice.data.LearningServiceDto
 import ia.anvil.dataservice.data.User
 import ia.anvil.dataservice.data.UserAuthenticationDto
+import ia.anvil.dataservice.service.LearningRequestDto
 import ia.anvil.dataservice.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/users")
-class UserController(val userService: UserService, val authConfiguration: AuthConfiguration) {
+class UserController(
+    val userService: UserService,
+    val authConfiguration: AuthConfiguration,
+    private val learningService: LearningServiceDto
+) {
 
     @Transactional
     fun saveUser(user: UserAuthenticationDto): String {
@@ -44,4 +47,12 @@ class UserController(val userService: UserService, val authConfiguration: AuthCo
 
         return ResponseEntity.ok(user.getOrNull())
     }
+
+    @PostMapping("/create")
+    fun createUser(@RequestBody learningRequestDto: LearningRequestDto): ResponseEntity<Any> {
+    learningService.sendLearningRequest(learningRequestDto)
+    return ResponseEntity.ok().body(mapOf("message" to "testa o post carai"))
+}
+
+
 }
