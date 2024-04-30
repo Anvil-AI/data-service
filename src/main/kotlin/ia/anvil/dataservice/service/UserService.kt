@@ -7,7 +7,20 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class UserService(val userRepository: UserRepository) {
+class UserService(val userRepository: UserRepository,val learningService: LearningService) {
+
+        private var generatedQuestion: String? = null
+
+    fun generateQuestion(subject: String, difficulty: String) {
+        val learningRequest = LearningRequestDto(subject, difficulty)
+
+        // Use o LearningService para gerar a pergunta
+        learningService.generateQuestion(learningRequest)
+    }
+
+    fun getQuestion(): String {
+        return generatedQuestion ?: "Nenhuma pergunta foi gerada ainda"
+    }
 
     fun findUserById(id: String): Result<User> = runCatching {
         userRepository.findUserById(UUID.fromString(id))
