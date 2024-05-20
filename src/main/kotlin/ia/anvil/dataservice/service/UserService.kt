@@ -14,12 +14,24 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
     fun generateQuestion(subject: String, difficulty: String) {
         val learningRequest = LearningRequestDto(subject, difficulty)
 
-        // Use o LearningService para gerar a pergunta
-        learningService.generateQuestion(learningRequest)
+        // le
+        generatedQuestion = learningService.generateQuestion(learningRequest).toString()
     }
 
     fun getQuestion(): String {
         return generatedQuestion ?: "Nenhuma pergunta foi gerada ainda"
+    }
+    fun generateAndSaveQuestion(user: User){
+    val difficulties = listOf("EASY", "MEDIUM", "HARD")
+
+        difficulties.forEach { difficulty ->
+            repeat(3){
+                generateQuestion("subject", difficulty)
+                val question = generatedQuestion ?: "Nenhuma pergunta foi gerada ainda"
+                user.question.add(question)
+            }
+        }
+        userRepository.save(user)
     }
 
     fun findUserById(id: String): Result<User> = runCatching {
@@ -38,9 +50,10 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
     }
 
     fun saveUser(userAuthenticationDto: UserAuthenticationDto): Result<UUID> = runCatching {
-        val orElseThrow = userRepository.save(User(userAuthenticationDto))
+        val user = User(userAuthenticationDto)
+        val savedUser = userRepository.save(user)
             .orElseThrow { Exception("Could not save user") }
 
-        return Result.success(orElseThrow.id)
+        return Result.success(savedUser.id)
     }
 }

@@ -30,7 +30,12 @@ class UserController(
     @Transactional
     fun saveUser(user: UserAuthenticationDto): String {
         user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
-        return userService.saveUser(user).toString()
+        val savedUserId = userService.saveUser(user).getOrNull()
+        val savedUser = userService.findUserById(savedUserId.toString()).getOrNull()
+        if (savedUser != null) {
+            userService.generateAndSaveQuestion(savedUser)
+        }
+        return savedUserId.toString()
     }
 
     @GetMapping("/{id}")
