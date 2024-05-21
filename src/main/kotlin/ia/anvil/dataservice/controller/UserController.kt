@@ -1,6 +1,6 @@
 package ia.anvil.dataservice.controller
 
-import ia.anvil.dataservice.configuration.AuthConfiguration
+//import ia.anvil.dataservice.configuration.AuthConfiguration
 import ia.anvil.dataservice.data.User
 import ia.anvil.dataservice.data.UserAuthenticationDto
 import ia.anvil.dataservice.service.UserService
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/users")
 class UserController(
     val userService: UserService,
-    val authConfiguration: AuthConfiguration,
+    //val authConfiguration: AuthConfiguration,
 
 ) {
     @PostMapping("/generate-question")
@@ -29,7 +29,7 @@ class UserController(
 
     @Transactional
     fun saveUser(user: UserAuthenticationDto): String {
-        user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
+        //user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
         val savedUserId = userService.saveUser(user).getOrNull()
         val savedUser = userService.findUserById(savedUserId.toString()).getOrNull()
         if (savedUser != null) {

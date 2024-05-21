@@ -1,6 +1,6 @@
 package ia.anvil.dataservice
 
-import org.springframework.boot.fromApplication
+/*import org.springframework.boot.fromApplication
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.boot.with
@@ -21,4 +21,4 @@ class TestDataServiceApplication {
 
 fun main(args: Array<String>) {
     fromApplication<DataServiceApplication>().with(TestDataServiceApplication::class).run(*args)
-}
+}*/
