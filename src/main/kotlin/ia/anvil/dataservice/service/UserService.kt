@@ -2,14 +2,17 @@ package ia.anvil.dataservice.service
 
 import ia.anvil.dataservice.data.User
 import ia.anvil.dataservice.data.UserAuthenticationDto
+import ia.anvil.dataservice.data.UserAnswerDto
 import ia.anvil.dataservice.repository.UserRepository
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClient
 import java.util.*
 
 @Service
 class UserService(val userRepository: UserRepository,val learningService: LearningService) {
 
-        private var generatedQuestion: String? = null
+    private var generatedQuestion: String? = null
+    private val webClient: WebClient = WebClient.create()
 
     fun generateQuestion(subject: String, difficulty: String) {
         val learningRequest = LearningRequestDto(subject, difficulty)
@@ -22,7 +25,7 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
         return generatedQuestion ?: "Nenhuma pergunta foi gerada ainda"
     }
     fun generateAndSaveQuestion(user: User){
-    val difficulties = listOf("EASY", "MEDIUM", "HARD")
+        val difficulties = listOf("EASY", "MEDIUM", "HARD")
 
         difficulties.forEach { difficulty ->
             repeat(3){
@@ -55,5 +58,14 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
             .orElseThrow { Exception("Could not save user") }
 
         return Result.success(savedUser.id)
+    }
+    fun checkAnswer(userAnswerDto: UserAnswerDto): Boolean {
+        val correctAnswer = webClient.get()
+            .uri("COloca a url aqui padreca seu bosta/{question}", userAnswerDto.question)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+
+        return userAnswerDto.userAnswer == correctAnswer
     }
 }

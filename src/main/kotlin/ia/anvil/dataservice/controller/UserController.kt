@@ -3,6 +3,7 @@ package ia.anvil.dataservice.controller
 //import ia.anvil.dataservice.configuration.AuthConfiguration
 import ia.anvil.dataservice.data.User
 import ia.anvil.dataservice.data.UserAuthenticationDto
+import ia.anvil.dataservice.data.UserAnswerDto
 import ia.anvil.dataservice.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
@@ -60,6 +61,15 @@ class UserController(
         if (user.isFailure) return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(user.getOrNull())
+    }
+    @PostMapping("/submit-answer")
+    fun submitAnswer(@RequestBody userAnswerDto: UserAnswerDto): ResponseEntity<Any> {
+        val isCorrect = userService.checkAnswer(userAnswerDto)
+        return if (isCorrect) {
+            ResponseEntity.ok().body(mapOf("message" to "Resposta correta"))
+        } else {
+            ResponseEntity.ok().body(mapOf("message" to "Resposta incorreta"))
+        }
     }
 
 }
