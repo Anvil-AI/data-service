@@ -1,6 +1,7 @@
 package ia.anvil.dataservice.controller
 
 import ia.anvil.dataservice.configuration.AuthConfiguration
+import ia.anvil.dataservice.data.QuestionRequestDto
 import ia.anvil.dataservice.data.User
 import ia.anvil.dataservice.data.UserAuthenticationDto
 import ia.anvil.dataservice.data.UserAnswerDto
@@ -16,10 +17,10 @@ class UserController(
     val authConfiguration: AuthConfiguration,
 
 ) {
-    @PostMapping("/generate-question")
-    fun generateQuestion(@RequestParam subject: String, @RequestParam difficulty: String): ResponseEntity<Any> {
-        userService.generateQuestion(subject, difficulty)
-        return ResponseEntity.ok().body(mapOf("message" to "Pergunta gerada"))
+    @PostMapping("/register")
+    fun registerUser(@RequestBody user: UserAuthenticationDto): ResponseEntity<String> {
+        val savedUserId = saveUser(user)
+        return ResponseEntity.ok(savedUserId)
     }
 
     @GetMapping("/get-question")
@@ -63,13 +64,15 @@ class UserController(
         return ResponseEntity.ok(user.getOrNull())
     }
     @PostMapping("/submit-answer")
-    fun submitAnswer(@RequestBody userAnswerDto: UserAnswerDto): ResponseEntity<Any> {
+    fun submitAnswer(@RequestBody userAnswerDto: UserAnswerDto): ResponseEntity<Boolean> {
         val isCorrect = userService.checkAnswer(userAnswerDto)
-        return if (isCorrect) {
-            ResponseEntity.ok().body(mapOf("message" to "Resposta correta"))
-        } else {
-            ResponseEntity.ok().body(mapOf("message" to "Resposta incorreta"))
-        }
+        return ResponseEntity.ok(isCorrect)
     }
+    @PostMapping("/generateQuestion")
+    fun generateQuestion(@RequestBody questionRequest: QuestionRequestDto): ResponseEntity<UserAnswerDto> {
+    val userAnswerDto = userService.generateQuestion(questionRequest)
+    return ResponseEntity.ok(userAnswerDto)
+    }
+
 
 }

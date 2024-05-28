@@ -1,5 +1,7 @@
 package ia.anvil.dataservice.service
 
+import java.io.FileInputStream
+import java.util.Properties
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -14,6 +16,13 @@ data class LearningRequestDto(
 @Service
 class LearningService {
 
+    fun loadApiKeys(): Properties {
+    val properties = Properties()
+    val inputStream = FileInputStream("application-secrets.properties")
+    properties.load(inputStream)
+    return properties
+    }
+
     // Variável para armazenar a pergunta gerada
     private var generatedQuestion: String? = null
 
@@ -24,16 +33,21 @@ class LearningService {
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        headers.set("Authorization", "YOUR_OPENAI_API_KEY")
+        val apiKeys = loadApiKeys()
+        headers.set("Authorization", "Bearer " + apiKeys.getProperty("openai.api.key"))
 
         val body = mapOf("prompt" to prompt, "max_tokens" to maxTokens)
         val request = HttpEntity(body, headers)
 
         val restTemplate = RestTemplate()
-        val response = restTemplate.postForObject(gpt3ApiUrl, request, String::class.java)
-
-        // Armazenando a resposta
-        generatedQuestion = response
+        try {
+            val response = restTemplate.postForObject(gpt3ApiUrl, request, String::class.java)
+            // Armazenando a resposta
+            generatedQuestion = response
+        } catch (e: Exception) {
+            println("Erro ao fazer a chamada de API: ${e.message}")
+            generatedQuestion = null
+        }
     }
     // retorna a pergunta gerada
     fun getQuestion(): String {
