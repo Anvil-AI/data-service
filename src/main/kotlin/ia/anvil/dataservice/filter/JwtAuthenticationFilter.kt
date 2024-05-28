@@ -1,6 +1,6 @@
 package ia.anvil.dataservice.filter
 
-import com.fasterxml.jackson.databind.ObjectMapper
+/*import com.fasterxml.jackson.databind.ObjectMapper
 import com.nimbusds.jose.Algorithm
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -11,9 +11,9 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import java.io.IOException
+import java.io.IOException*/
 
-class JwtAuthenticationFilter(private val authenticationManager: AuthenticationManager): UsernamePasswordAuthenticationFilter() {
+/*class JwtAuthenticationFilter(private val authenticationManager: AuthenticationManager): UsernamePasswordAuthenticationFilter() {
 
     init {
         setFilterProcessesUrl("/api/v1/authentication")
@@ -29,4 +29,4 @@ class JwtAuthenticationFilter(private val authenticationManager: AuthenticationM
             throw RuntimeException(exception)
         }
     }
-}
+}*/
