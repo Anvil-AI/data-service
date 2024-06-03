@@ -1,9 +1,6 @@
 package ia.anvil.dataservice.service
 
-import ia.anvil.dataservice.data.QuestionRequestDto
-import ia.anvil.dataservice.data.User
-import ia.anvil.dataservice.data.UserAuthenticationDto
-import ia.anvil.dataservice.data.UserAnswerDto
+import ia.anvil.dataservice.data.*
 import ia.anvil.dataservice.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -15,7 +12,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.HttpEntity
 import org.springframework.web.client.RestTemplate
 import java.util.UUID
-import ia.anvil.dataservice.data.Question
 
 @Service
 class UserService(val userRepository: UserRepository,val learningService: LearningService) {
@@ -24,7 +20,7 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
     private val webClient: WebClient = WebClient.create()
 
     fun generateQuestion(questionRequest: QuestionRequestDto): UserAnswerDto {
-        val learningRequest = LearningRequestDto(questionRequest.subject, questionRequest.difficulty)
+        val learningRequest = LearningRequestDto(questionRequest.subject, questionRequest.difficulty.toString())
         val generatedQuestion = learningService.generateQuestion(learningRequest).toString()
         return UserAnswerDto(generatedQuestion, "")
     }
@@ -55,19 +51,20 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
         return generatedQuestion ?: "Nenhuma pergunta foi gerada ainda"
     }
 
-    fun generateAndSaveQuestion(user: User){
-        val difficulties = listOf("EASY", "MEDIUM", "HARD")
+    fun generateAndSaveQuestion(user: User, questionRequest: QuestionRequestDto): UserAnswerDto? {
+    val difficulties = listOf(Difficulty.EASY , Difficulty.MEDIUM , Difficulty.HARD)
+    var questionAnswer: UserAnswerDto? = null
 
-        difficulties.forEach { difficulty ->
-            repeat(3){
-                val questionRequest = QuestionRequestDto("subject", difficulty)
-                val questionAnswer = generateQuestion(questionRequest)
-                val question = Question(id = UUID.randomUUID(), userId = user.id.toString(), question = questionAnswer.question, answer = questionAnswer.userAnswer)
-                user.questions.add(question)
-            }
+    difficulties.forEach { difficulty ->
+        repeat(3){
+            questionAnswer = generateQuestion(questionRequest)
+            val question = Question(id = UUID.randomUUID(), userId = user.id.toString(), question = questionAnswer?.question ?: "", answer = questionAnswer?.userAnswer ?: "")
+            user.questions.add(question)
         }
-        userRepository.save(user)
     }
+    userRepository.save(user)
+    return questionAnswer
+}
 
     fun findUserById(id: String): Result<User> = runCatching {
         userRepository.findUserById(UUID.fromString(id))
