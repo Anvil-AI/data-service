@@ -3,7 +3,6 @@ package ia.anvil.dataservice.controller
 
 import ia.anvil.dataservice.configuration.AuthConfiguration
 import ia.anvil.dataservice.data.QuestionRequestDto
-import ia.anvil.dataservice.configuration.AuthConfiguration
 import ia.anvil.dataservice.data.User
 import ia.anvil.dataservice.data.UserAuthenticationDto
 import ia.anvil.dataservice.data.UserAnswerDto
@@ -33,7 +32,7 @@ class UserController(
 
     @Transactional
     fun saveUser(user: UserAuthenticationDto): String {
-        //user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
+        user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
         val savedUserId = userService.saveUser(user).getOrNull()
         val savedUser = userService.findUserById(savedUserId.toString()).getOrNull()
         if (savedUser != null) {
