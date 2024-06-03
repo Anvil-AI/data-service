@@ -14,6 +14,8 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.HttpEntity
 import org.springframework.web.client.RestTemplate
+import java.util.UUID
+import ia.anvil.dataservice.data.Question
 
 @Service
 class UserService(val userRepository: UserRepository,val learningService: LearningService) {
@@ -54,15 +56,15 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
     }
 
     fun generateAndSaveQuestion(user: User){
-    val difficulties = listOf("EASY", "MEDIUM", "HARD")
+        val difficulties = listOf("EASY", "MEDIUM", "HARD")
 
         difficulties.forEach { difficulty ->
-        repeat(3){
-            val questionRequest = QuestionRequestDto("subject", difficulty)
-            generateQuestion(questionRequest)
-            val question = generatedQuestion ?: "Nenhuma pergunta foi gerada ainda"
-            user.question.add(question)
-        }
+            repeat(3){
+                val questionRequest = QuestionRequestDto("subject", difficulty)
+                val questionAnswer = generateQuestion(questionRequest)
+                val question = Question(id = UUID.randomUUID(), userId = user.id.toString(), question = questionAnswer.question, answer = questionAnswer.userAnswer)
+                user.questions.add(question)
+            }
         }
         userRepository.save(user)
     }
@@ -94,4 +96,6 @@ class UserService(val userRepository: UserRepository,val learningService: Learni
         properties.load(inputStream)
         return properties
     }
+
+
 }

@@ -14,7 +14,7 @@ data class User(
     val password: String,
     val phone: String,
 
-    val question: MutableList<String> = mutableListOf(),
+    val questions: MutableList<Question> = mutableListOf(), // Adicionado campo questions
 
     val theme: List<Theme>,
     val preferences: UserPreferences
