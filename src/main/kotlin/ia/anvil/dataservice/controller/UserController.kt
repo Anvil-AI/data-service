@@ -19,10 +19,10 @@ class UserController(
 
 ) {
     @PostMapping("/register")
-    fun registerUser(@RequestBody user: UserAuthenticationDto, @RequestBody questionRequest: QuestionRequestDto): ResponseEntity<String> {
-    val savedUserId = saveUser(user, questionRequest)
+    fun registerUser(@RequestBody user: UserAuthenticationDto): ResponseEntity<String> {
+    val savedUserId = saveUser(user)
     return ResponseEntity.ok(savedUserId)
-}
+    }
 
     @GetMapping("/get-question")
     fun getQuestion(): ResponseEntity<Any> {
@@ -31,15 +31,11 @@ class UserController(
     }
 
     @Transactional
-    fun saveUser(user: UserAuthenticationDto, questionRequest: QuestionRequestDto): String {
+    fun saveUser(user: UserAuthenticationDto): String {
     user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
     val savedUserId = userService.saveUser(user).getOrNull()
-    val savedUser = userService.findUserById(savedUserId.toString()).getOrNull()
-    if (savedUser != null) {
-        userService.generateAndSaveQuestion(savedUser, questionRequest)
-    }
     return savedUserId.toString()
-}
+    }
 
     @GetMapping("/{id}")
     fun findUserById(@PathVariable id: String): ResponseEntity<User> {
