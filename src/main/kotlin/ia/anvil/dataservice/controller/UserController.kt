@@ -20,8 +20,8 @@ class UserController(
 ) {
     @PostMapping("/register")
     fun registerUser(@RequestBody user: UserAuthenticationDto): ResponseEntity<String> {
-        val savedUserId = saveUser(user)
-        return ResponseEntity.ok(savedUserId)
+    val savedUserId = saveUser(user)
+    return ResponseEntity.ok(savedUserId)
     }
 
     @GetMapping("/get-question")
@@ -32,13 +32,9 @@ class UserController(
 
     @Transactional
     fun saveUser(user: UserAuthenticationDto): String {
-        user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
-        val savedUserId = userService.saveUser(user).getOrNull()
-        val savedUser = userService.findUserById(savedUserId.toString()).getOrNull()
-        if (savedUser != null) {
-            userService.generateAndSaveQuestion(savedUser)
-        }
-        return savedUserId.toString()
+    user.password = authConfiguration.bCryptPasswordEncoder().encode(user.password)
+    val savedUserId = userService.saveUser(user).getOrNull()
+    return savedUserId.toString()
     }
 
     @GetMapping("/{id}")
@@ -69,9 +65,16 @@ class UserController(
         val isCorrect = userService.checkAnswer(userAnswerDto)
         return ResponseEntity.ok(isCorrect)
     }
-    @PostMapping("/generateQuestion")
-    fun generateQuestion(@RequestBody questionRequest: QuestionRequestDto): ResponseEntity<UserAnswerDto> {
-    val userAnswerDto = userService.generateQuestion(questionRequest)
+    @PostMapping("/{userId}/generateQuestion")
+    fun generateQuestion(@PathVariable userId: String, @RequestBody questionRequest: QuestionRequestDto): ResponseEntity<UserAnswerDto> {
+    val userResult = userService.findUserById(userId)
+    if (userResult.isFailure) return ResponseEntity.notFound().build()
+
+    val user = userResult.getOrNull()
+    var userAnswerDto: UserAnswerDto? = null
+    if (user != null) {
+        userAnswerDto = userService.generateAndSaveQuestion(user, questionRequest)
+    }
     return ResponseEntity.ok(userAnswerDto)
     }
 
